@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>NA Portal Tools</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="brand">
+        <span class="logo" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+            <path d="M8 7V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/>
+            <rect x="3" y="7" width="18" height="13" rx="2"/>
+            <path d="M3 12h18m-11 0v2h4v-2"/>
+          </svg>
+        </span>
+        <div><strong>NA Portal Tools</strong><small>Local administration</small></div>
+      </div>
+      <span class="badge">Changes affect the selected backend</span>
+    </header>
+    <nav aria-label="Features">
+      <div class="nav-group">
+        <span class="nav-label">REST API</span>
+        <button data-page="api-explorer" class="active">API Explorer</button>
+        <button data-page="health-check">✓ <span>Health check</span></button>
+      </div>
+      <div class="nav-group">
+        <select id="workflow-group" aria-label="Workflow API group">
+          <option value="Data Management">Data Management</option>
+          <option value="GO">GO</option>
+          <option value="MPT">MPT</option>
+        </select>
+        <div id="data-management-nav" class="nav-group">
+          <button data-page="entities">Entities</button>
+          <button data-page="entries">Entries</button>
+          <button data-page="insert-entity">Add entity</button>
+          <button data-page="delete-entity">Delete entity</button>
+          <button data-page="insert-entry">Add entries</button>
+          <button data-page="delete-entries">Clear entries</button>
+        </div>
+        <span id="workflow-coming-soon" class="badge" hidden>Coming soon</span>
+      </div>
+    </nav>
+    <section class="connection card" aria-label="Backend connection">
+      <div><strong>Backend connection</strong><small>HTTP endpoint used for portal API requests</small></div>
+      <label>Host<input id="host" value="localhost" placeholder="Hostname or IP" autocomplete="off"></label>
+      <label class="port">Port<input id="port" type="number" value="9015" min="1" max="65535"></label>
+    </section>
+    <div id="status" role="status" aria-live="polite" hidden></div>
+    <div class="page-heading"><div><div class="eyebrow">NA-PORTAL REST API</div><h1 id="page-title">API Explorer</h1><p id="page-description"></p></div><span id="entity-count" class="badge">0 discovered</span></div>
+
+    <section id="api-explorer-panel" class="card" hidden>
+      <div class="section-heading">
+        <div><h2>Documented REST operations</h2><p>Choose an operation, then load its example if available. Review sample values before running a request.</p></div>
+        <div class="api-reference-links">
+          <a href="https://github.com/AlticeLabsProjects/na-portal/blob/main/doc/swagger/na-portal-rest-api-doc.json" target="_blank" rel="noopener noreferrer">
+            <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.65 7.65 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/>
+            </svg>
+            GitHub OpenAPI
+          </a>
+          <span class="api-reference-separator" aria-hidden="true">&middot;</span>
+          <a href="http://nacommons-test-bed.c.ptin.corppt.com:70/?urls.primaryName=na-portal-rest" target="_blank" rel="noopener noreferrer">
+            <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="8" fill="#85ea2d"/>
+              <path d="M5.5 4.5h-.4a1 1 0 0 0-1 1v1A1.5 1.5 0 0 1 2.6 8a1.5 1.5 0 0 1 1.5 1.5v1a1 1 0 0 0 1 1h.4m5-7h.4a1 1 0 0 1 1 1v1A1.5 1.5 0 0 0 13.4 8a1.5 1.5 0 0 0-1.5 1.5v1a1 1 0 0 1-1 1h-.4" stroke="#233248" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M6.5 8h.1m1.35 0h.1m1.35 0h.1" stroke="#233248" stroke-width="1.1" stroke-linecap="round"/>
+            </svg>
+            Swagger UI
+          </a>
+        </div>
+      </div>
+      <label>API group<select id="api-group"></select></label>
+      <label>Operation<select id="api-operation"></select></label>
+      <div id="api-operation-summary" class="operation-summary"></div>
+      <button id="load-api-example" type="button" class="secondary" disabled>Load example</button>
+      <p id="api-example-note" aria-live="polite"></p>
+      <div id="api-path-params"></div>
+      <label>Query parameters (JSON object)<textarea id="api-query" rows="4" spellcheck="false">{}</textarea><small id="api-query-hint"></small></label>
+      <label><span id="api-body-label">Request body (JSON)</span><textarea id="api-body" rows="10" spellcheck="false"></textarea></label>
+      <button id="execute-api-operation">Run API request</button>
+    </section>
+
+    <section id="health-check-panel" class="card" hidden>
+      <h2>Backend health</h2>
+      <p>Call <code>GET /health</code> on the selected backend. A successful response may have an empty body.</p>
+      <button id="run-health-check">Run health check</button>
+      <h3>TCP connectivity</h3>
+      <p>Check whether the port accepts connections, without calling the API.</p>
+      <button id="run-connectivity-check" class="secondary">Check connectivity</button>
+    </section>
+
+    <section id="entity-picker" class="card">
+      <div class="section-heading"><div><h2>Choose an entity</h2><p>Discover once, then select an entity for any catalog operation.</p></div><button id="refresh-entities">Discover entities</button></div>
+      <label class="search-label">Filter entities<input id="entity-search" type="search" placeholder="Search by name or ID..."></label>
+      <div id="entity-list" class="entity-grid"><p class="empty">No entities loaded. Click Discover entities to get started.</p></div>
+      <div class="selection">
+        <span id="selection-empty">No entity selected</span>
+        <div id="selection" hidden>
+          <span>Selected: <strong id="selected-entity-name"></strong></span>
+          <button type="button" class="secondary" id="copy-entity-name" aria-label="Copy entity name"></button>
+          <span>ID <strong id="selected-entity-id"></strong></span>
+          <button type="button" class="secondary" id="copy-entity-id" aria-label="Copy entity ID"></button>
+        </div>
+      </div>
+    </section>
+
+    <section id="entries-panel" class="card" hidden>
+      <div class="section-heading"><div><h2>Catalog entries</h2><p>Select an entity above to load its entries.</p></div><button id="load-entries">Load entries</button></div>
+      <div class="toolbar"><label>Filter entries<input id="entry-search" type="search" placeholder="Search all fields..."></label><span id="entry-count" class="badge">0 entries</span><button id="download-entries" class="secondary" disabled>Download JSON</button></div>
+      <div id="entries-output" class="table-wrap"><p class="empty">Entries will appear here.</p></div>
+    </section>
+
+    <section id="insert-entity-panel" class="card" hidden>
+      <h2>Insert an entity definition</h2><p>Upload an entity JSON file or paste its contents. The definition is sent to the documented catalog entity endpoint.</p>
+      <label>Entity JSON file<input id="entity-file" type="file" accept=".json,application/json"></label>
+      <label>Entity definition<textarea id="entity-json" rows="12" placeholder='{"name": "my.catalog", ...}' spellcheck="false"></textarea></label>
+      <button id="insert-entity">Review and insert entity</button>
+    </section>
+
+    <section id="insert-entry-panel" class="card" hidden>
+      <h2>Insert catalog entries</h2><p>Paste or upload one entry object or an array. The selected entity ID is applied automatically; existing entry IDs are removed. Existing entries are not deleted.</p>
+      <label>Entries JSON file<input id="entry-file" type="file" accept=".json,application/json"></label>
+      <label>Entry JSON<textarea id="entry-json" rows="12" placeholder='{"name": "New entry"}' spellcheck="false"></textarea></label>
+      <button id="insert-entries">Review and insert entries</button>
+    </section>
+
+    <section id="delete-panel" class="card danger-panel" hidden>
+      <h2 id="delete-title"></h2><p id="delete-description"></p>
+      <button id="delete-action" class="danger">Review deletion</button>
+    </section>
+    <section id="result-panel" class="card" hidden><h2>Operation result</h2><pre id="result"></pre></section>
+    <details id="api-console" class="card">
+      <summary>Request details and curl commands</summary>
+      <div class="section-heading"><p>Actual backend requests and terminal-style output. Editing a curl command does not execute it.</p><button id="clear-console" class="secondary">Clear console</button></div>
+      <p class="console-warning">Requests, commands, and responses may contain sensitive catalog values. Review them before sharing.</p>
+      <label>Terminal output<textarea id="terminal-output" class="terminal" rows="6" readonly spellcheck="false" placeholder="Run an operation to see its output here."></textarea></label>
+      <div id="api-calls"><p class="empty">No API calls yet.</p></div>
+    </details>
+  </main>
+  <template id="copy-icon">
+    <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+      <g class="copy-symbol">
+        <rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/>
+        <path d="M3 10V4.5A1.5 1.5 0 0 1 4.5 3H10"/>
+      </g>
+      <path class="copied-symbol" d="m3.5 8 3 3 6-6"/>
+    </svg>
+  </template>
+  <dialog id="confirm-dialog" aria-labelledby="confirm-title">
+    <h2 id="confirm-title">Confirm operation</h2><p id="confirm-text"></p>
+    <pre id="confirm-preview" hidden></pre>
+    <label id="confirm-name-label" hidden>Type the entity name to confirm<input id="confirm-name" autocomplete="off"></label>
+    <div class="dialog-actions"><button id="cancel-confirm" class="secondary">Cancel</button><button id="accept-confirm" class="danger">Confirm</button></div>
+  </dialog>
+</body>
+</html>

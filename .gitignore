@@ -281,3 +281,7 @@ pyrightconfig.json
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/python,intellij+all,visualstudiocode
+
+# Generated CLI translation files may contain catalog credentials.
+beforeTranslate/
+afterTranslate/

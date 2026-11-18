@@ -1,0 +1,2 @@
+# Legacy CLI only. The web UI and API metadata generator use the standard library.
+requests
